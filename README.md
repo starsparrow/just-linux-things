@@ -31,9 +31,9 @@ A set of scripts to help get a lean, functional Linux workstation up and running
   
   Alternatively, you can clone the repository to your container host and run:  
   
-  `sudo docker build -t container-name-here location-of-cloned-repo`  
-  
-  * Run your container interactively using the following command:  
+  `sudo docker build -t container-name-here location-of-cloned-repo`
+
+* Run your container interactively using the following command:  
 
   `sudo docker run -it container-name-here /bin/bash`  
 
