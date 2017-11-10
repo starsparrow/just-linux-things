@@ -1,0 +1,114 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+
+function update-apt-sources {
+	echo $'\n#### Updating apt source list...\n'
+	sudo sed -i 's/main/main contrib non-free/g' /etc/apt/sources.list
+	sudo apt update
+	echo $'\n#### apt source list updated!\n'
+}
+
+function install-core-cli {
+	echo $'\n#### Installing core CLI apps/utilities...\n'
+	sudo apt install -y htop vim lynx tmux ranger p7zip-full gcc make screenfetch python3 python3-pip alsa-utils weechat
+	echo $'\n## Checking to see if this is running in a container...\n'
+	if [ -f /.dockerenv ]; then
+		echo $'\n## Running in container. Skipping kernel updates!\n'
+	else
+		echo $'\n## Not running in a container. Updating kernel...\n'
+		sudo apt install -y linux-headers-$(uname -r)
+		echo $'\n## Kernel updated!\n'
+	fi
+	echo $'\n#### Core CLI apps/utilities installed!\n'
+}
+
+function install-core-gui {
+	echo $'\n#### Installing core GUI apps/utilities...\n'
+
+	# Install and setup greeter
+	sudo apt install -y lightdm lightdm-gtk-greeter
+	
+	# Install preferred GUI apps
+	sudo apt install -y xorg redshift firefox-esr vlc imagemagick deluge 
+	
+	# Install Spotify
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886
+	echo deb http://repository.spotify.com stable non-free | sudo tee /etc/apt/sources.list.d/spotify.list
+	sudo apt update
+	sudo apt install -y spotify-client
+
+	echo $'\n#### Core GUI apps/utilities installed!\n'
+}
+
+function install-i3 {
+	echo $'\n#### Installing i3...\n'
+	# Install an i3 "desktop environment" (i3-wm, i3status, i3lock, dmenu)
+	sudo apt install -y i3
+	echo $'\n#### i3 installed!\n' 
+}
+
+function install-xfce {
+	echo $'\n#### Installing XFCE4...\n'
+	# Install the XFCE4 Desktop Environment
+	sudo apt install -y xfce4
+	echo $'\n#### XFCE4 installed!\n'
+}
+
+function setup-bash {
+	echo $'\n#### Setting up bash...\n'
+	# Install Chris Kempson's excellent base16-shell colorschemes	
+	git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
+	echo $'\n## Copying base16 configs...\n'
+	echo 'source ~/.bash_base16' >> ~/.bashrc
+	cp $dir/resources/.bash_base16 ~
+	echo $'\n## base16 configs copied!\n'
+
+	echo $'\n## Copying bash aliases...\n'
+	# Add bash aliases
+	cp $dir/resources/.bash_aliases ~
+	echo $'\n## bash aliases copied!\n'
+
+	echo $'\n#### bash setup completed!\n'
+}
+
+function setup-vim {
+	echo $'\n#### Setting up vim...\n'
+	echo $'\n## Installing Vundle...\n'
+	# Install Vundle plugin manager
+	git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+	echo $'\n## Vundle installed!'
+	echo $'\n## Installing fonts...\n'
+	# Install special fonts for vim-airline plugin
+	git clone https://github.com/powerline/fonts.git --depth=1 ~/fonts
+	bash ~/fonts/install.sh
+	rm -rf ~/fonts
+	echo $'\n## Fonts installed!\n'
+
+	# Copy vim configurations
+	echo $'\n## Copying vim configurations...\n'
+	cp $dir/resources/.vimrc ~
+	echo $'\n## vim configurations copied!\n'
+	echo $'\n## Installing Vundle plugins...\n'
+	vim +PluginInstall +qall
+	echo $'\n## Vundle plugins installed!\n'
+	echo $'\n#### vim setup completed!\n'
+}
+
+function install-broadcom-wireless {
+	# Install legacy Broadcom WLAN drivers for Dell Latitude 1525 (and others)
+	sudo apt install linux-image-$(uname -r|sed 's,[^-]*-[^-]*-,,') linux-headers-$(uname -r|sed 's,[^-]*-[^-]*-,,') broadcom-sta-dkms
+	sudo modprobe -r b44 b43 b43legacy ssb brcmsmac bcma
+	sudo modprobe wl
+	sudo /etc/init.d/networking restart
+}
+
+function upgrade {
+	echo $'\n#### Upgrading packages...\n'
+	sudo apt -y upgrade
+	echo $'\n#### Packages upgraded!\n'
+}
+
+function finish-post-install {
+	echo $'\n\nPost-Install Scripts completed! Please restart your shell for all changes to take effect.\n\n'
+}

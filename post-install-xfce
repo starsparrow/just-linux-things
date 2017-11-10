@@ -1,0 +1,12 @@
+#!/bin/bash
+dir=$(dirname "$0")
+. $dir/helper-functions
+
+update-apt-sources
+install-core-cli
+install-core-gui
+install-xfce
+setup-bash
+setup-vim
+upgrade
+finish-post-install
