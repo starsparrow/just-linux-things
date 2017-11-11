@@ -66,6 +66,12 @@ function setup-bash {
 
 	echo $'\n## Copying bash aliases...\n'
 	# Add bash aliases
+	if [ -f /.dockerenv ]; then
+		echo $'\n## Running in container. Adding bash aliases to .bashrc...\n'
+	echo 'source ~/.bash_aliases' >> ~/.bashrc
+	else
+            echo $'\n## Not running in a container. Leaving .bashrc alone as it already contains a reference to .bash_aliases (probably?)'
+	fi
 	cp $dir/resources/.bash_aliases ~
 	echo $'\n## bash aliases copied!\n'
 
