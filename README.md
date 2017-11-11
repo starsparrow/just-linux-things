@@ -1,7 +1,7 @@
-# Debian Linux Post-Install Scripts
-A set of scripts to help get a lean, functional Linux workstation up and running.
+# just-linux-things
+A set of scripts to help get a lean, functional Linux workstation up and running, either as a Debian post-install step or as a Docker container.
 
-## Instructions
+## Debian Post-Install Instructions
 
 * Do a netinstall of Debian 9, don't select any Debian Desktop Environment options.  
 
@@ -19,3 +19,21 @@ A set of scripts to help get a lean, functional Linux workstation up and running
   `git clone https://github.com/starsparrow/just-linux-things`
 
 * Finally, navigate to the configs/linux directory and run one of the _post-install\*_ scripts found there according to what kind of environment you want!
+
+
+## Docker Image Instructions
+
+* Install Docker on your Linux container host (or if you've managed to get your Windows host to run Linux containers, feel free to do that).
+  
+* Run the following command to build your container image:  
+  
+  `sudo docker build -t container-name-here github.com/starsparrow/just-linux-things`  
+  
+  Alternatively, you can clone the repository to your container host and run:  
+  
+  `sudo docker build -t container-name-here location-of-cloned-repo`
+
+* Run your container interactively using the following command:  
+
+  `sudo docker run -it container-name-here /bin/bash`  
+
